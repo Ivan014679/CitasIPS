@@ -1,0 +1,68 @@
+<ng-container *ngIf='this.periodoAcademico'>
+    <h3 class="titulos">Reportes</h3>
+    <br />
+    <div class="container contenedornormal">
+        <div class="row justify-content-center">
+            <div class="col-sm-8">
+                <form [formGroup]="tiposReportes">
+                    <label>Reporte por: </label>
+                    <select formControlName="tipos_reportes" #tipos_reportes (change)="cambio(tipos_reportes.value)"
+                        class="form-control">
+                        <option selected disabled>Escoja un reporte</option>
+                        <option value="1">N&uacute;mero de consultas por g&eacute;nero</option>
+                        <option value="2">N&uacute;mero de consultas por edad</option>
+                        <option value="3">N&uacute;mero de consultas por estrato</option>
+                        <option value="4">N&uacute;mero de consultas por programa</option>
+                        <option value="5">N&uacute;mero de consultas por servicio aplicado</option>
+                        <option value="6">N&uacute;mero de consultas por servicio complementario</option>
+                        <option value="7">N&uacute;mero de consultas por profesional</option>
+                        <option value="8">N&uacute;mero de consultas por deserci&oacute;n</option>
+                        <option value="9">N&uacute;mero de pacientes por EPS</option>
+                        <option value="10">Total por semestre</option>
+                        <option value="11">Proceso de seguimiento</option>
+                    </select>
+                </form>
+            </div>
+        </div>
+        <div class="row justify-content-center" style="margin-top: 2.5em;" *ngIf='this.tipoReporte'>
+            <table id="table" 
+                class="display table table-hover row-border hover" style="width: 35em;">
+                <thead class="thead-dark">
+                    <tr>
+                        <th *ngIf="this.tipoReporte == '1'">G&eacute;nero</th>
+                        <th *ngIf="this.tipoReporte == '2'">Edad</th>
+                        <th *ngIf="this.tipoReporte == '3'">Estrato</th>
+                        <th *ngIf="this.tipoReporte == '4' || this.tipoReporte == '10'">Programa</th>
+                        <th *ngIf="this.tipoReporte == '5'">Servicio aplicado</th>
+                        <th *ngIf="this.tipoReporte == '6'">Servicio complementario</th>
+                        <th *ngIf="(this.tipoReporte >= '7' && this.tipoReporte <= '8') || this.tipoReporte == '11'">Profesional</th>
+                        <th *ngIf="this.tipoReporte == '8'">N&uacute;mero de deserciones</th>
+                        <th *ngIf="this.tipoReporte == '9'">EPS</th>
+                        <th *ngIf="this.tipoReporte == '9'">N&uacute;mero de pacientes</th>
+                        <th *ngIf="this.tipoReporte == '10'">Semestre</th>
+                        <th *ngIf="this.tipoReporte == '11'">Nombres</th>
+                        <th *ngIf="(this.tipoReporte >= '1' && this.tipoReporte <= '7') || this.tipoReporte == '10'">N&uacute;mero de consultas</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let registro of registros">
+                        <td *ngIf="this.tipoReporte == '1'">{{registro.genero}}</td>
+                        <td *ngIf="this.tipoReporte == '2'">{{registro.edad}}</td>
+                        <td *ngIf="this.tipoReporte == '3'">{{registro.estrato}}</td>
+                        <td *ngIf="this.tipoReporte == '4' || this.tipoReporte == '10'">{{registro.programa}}</td>
+                        <td *ngIf="this.tipoReporte == '5'">{{registro.servicio_aplicado}}</td>
+                        <td *ngIf="this.tipoReporte == '6'">{{registro.servicio_complementario}}</td>
+                        <td *ngIf="(this.tipoReporte >= '7' && this.tipoReporte <= '8') || this.tipoReporte == '11'">{{registro.tipo_personal_salud}}</td>
+                        <td *ngIf="this.tipoReporte == '9'">{{registro.eps}}</td>
+                        <td *ngIf="this.tipoReporte == '10'">{{registro.semestre}}</td>
+                        <td *ngIf="this.tipoReporte == '11'">{{registro.personal_salud}}</td>
+                        <td>{{registro.total}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="row justify-content-center" style="margin-top: 2.5em;" *ngIf='this.tipoReporte'>
+            <button type="button" (click)="onClick()" class="btn btn-primary">Exportar a Excel</button>
+        </div>
+    </div>
+</ng-container>

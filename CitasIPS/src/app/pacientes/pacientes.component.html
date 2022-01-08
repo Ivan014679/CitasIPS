@@ -1,0 +1,151 @@
+<h3 class="titulos">Registro de pacientes</h3>
+<form [formGroup]="registrarPacienteForm" (ngSubmit)="onFormSubmit(registrarPacienteForm.value)">
+    <div class=" formbody contenedornormal">
+        <div class="container">
+            <h6>Buscar estudiante</h6>
+            <div class="contenedor2">
+                <div class="row form-group">
+                    <div class="col-sm-6">
+                        <label>Número de identificaci&oacute;n: </label>
+                        <input formControlName="identificacion" #identificacion type="text"
+                            placeholder="Ingrese la identificación del paciente" class="form-control" />
+                    </div>
+                    <div class="col-sm-6">
+                        <label>Lugar de expedici&oacute;n: </label>
+                        <input formControlName="expedicion" #expedicion type="text" placeholder="Expedición"
+                            class="form-control" readonly />
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-sm-6">
+                        <label>C&oacute;digo: </label>
+                        <input formControlName="codigo" #codigo type="text"
+                            placeholder="Ingrese el código del paciente" class="form-control" />
+                    </div>
+                    <div class="col-sm-6">
+                        <label>Tipo de identificaci&oacute;n: </label>
+                        <select formControlName="tipo_identificacion" #tipo_identificacion class="form-control" disabled>
+                            <option selected disabled>Tipo de identificaci&oacute;n del paciente</option>
+                            <option *ngFor="let tipoIdentificacion of tiposIdentificacion | async" value="{{tipoIdentificacion.id}}">{{tipoIdentificacion.nombre}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-14 centercontent">
+                        <button type="button" (click)="onClick()" style="width: 100%;" class="btn btn-primary margenboton"><i
+                                class="fa fa-search">&nbsp;</i>Buscar</button>
+                    </div>
+                </div>
+            </div>
+
+            <input formControlName="id_estudiante" #id_estudiante type="hidden" />
+
+            <div class="row form-group">
+                <div class="col-sm-4">
+                    <label>Nombres: </label>
+                    <input formControlName="nombres" #nombres type="text" placeholder="Nombre del paciente"
+                        class="form-control" readonly/>
+                </div>
+                <div class="col-sm-4">
+                    <label>Apellidos: </label>
+                    <input formControlName="apellidos" #apellidos type="text" placeholder="Apellido del paciente"
+                        class="form-control" readonly/>
+                </div>
+                <div class="col-sm-4">
+                    <label>G&eacute;nero: </label>
+                    <select formControlName="genero" #genero class="form-control" disabled>
+                        <option selected disabled>G&eacute;nero del paciente</option>
+                        <option value="01">Masculino</option>
+                        <option value="02">Femenino</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-sm-6">
+                    <label>Fecha de nacimiento: </label>
+                    <input formControlName="fecha_nacimiento" #fecha_nacimiento type="date" min="1930-01-01"
+                        [max]="diaActual()" class="form-control" readonly/>
+                </div>
+                <div class="col-sm-6">
+                    <label>Edad: </label>
+                    <input formControlName="edad" #edad type="number" min="0" max="99" placeholder="Edad del paciente"
+                        class="form-control" readonly/>
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-sm-4">
+                    <label>Tel&eacute;fono: </label>
+                    <input formControlName="telefono" #telefono type="text" placeholder="Teléfono del paciente"
+                        class="form-control" readonly/>
+                </div>
+                <div class="col-sm-4">
+                    <label>Celular: </label>
+                    <input formControlName="celular" #celular type="text" placeholder="Celular del paciente"
+                        class="form-control" readonly/>
+                </div>
+                <div class="col-sm-4">
+                    <label>Correo electr&oacute;nico: </label>
+                    <input formControlName="correo_electronico" #correo_electronico type="email"
+                        placeholder="Correo electrónico del paciente" class="form-control" readonly/>
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-sm-4">
+                    <label>Direcci&oacute;n: </label>
+                    <input formControlName="direccion" #direccion type="text" placeholder="Dirección del paciente"
+                        class="form-control" readonly/>
+                </div>
+                <div class="col-sm-4">
+                    <label>Barrio: </label>
+                    <input formControlName="barrio" #barrio type="text" placeholder="Barrio del paciente"
+                        class="form-control" readonly/>
+                </div>
+                <div class="col-sm-4">
+                    <label>Estrato socioecon&oacute;mico: </label>
+                    <select formControlName="estrato" #estrato class="form-control" disabled>
+                        <option selected disabled>Estrato del paciente</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-sm-6">
+                    <label>Programa acad&eacute;mico: </label>
+                    <select formControlName="programa" #programa class="form-control" disabled>
+                        <option selected disabled>Programa del paciente</option>
+                        <option *ngFor="let programa of programas | async" value="{{programa.id}}">{{programa.nombre}}</option>
+                    </select>
+                </div>
+                <div class="col-sm-6">
+                    <label>Semestre: </label>
+                    <input formControlName="semestre" #semestre type="text" placeholder="Semestre del paciente"
+                        class="form-control" readonly/>
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-sm-6">
+                    <label>EPS que est&aacute; afiliado: </label>
+                    <input formControlName="eps" #eps type="text" placeholder="EPS del paciente" class="form-control" />
+                </div>
+                <div class="col-sm-6">
+                    <label>Modalidad de afiliaci&oacute;n: </label>
+                    <select formControlName="modalidad_afiliacion" #modalidad_afiliacion class="form-control">
+                        <option selected disabled>Modalidades</option>
+                        <option *ngFor="let modalidadAfiliacion of modalidadesAfiliacion | async" value="{{modalidadAfiliacion.id}}">{{modalidadAfiliacion.nombre}}</option>
+                    </select>
+                </div>
+            </div>
+
+            <br />
+            <div class="row justify-content-center form-group">
+                <button type="submit" [disabled]="!registrarPacienteForm.valid" class="btn btn-success">Guardar datos</button>
+            </div>
+
+        </div>
+    </div>
+</form>

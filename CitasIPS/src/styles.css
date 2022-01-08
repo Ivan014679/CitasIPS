@@ -1,0 +1,45 @@
+/* You can add global styles to this file, and also import other style files */
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.titulos {
+    margin-top: 5vh;
+    margin-bottom: 5vh;
+    text-align: center;
+}
+
+.contenedornormal {
+    width: 50em;
+    margin: 0 auto;
+}
+
+.contenedornormal2 {
+    width: 55em;
+    margin: 0 auto;
+}
+
+.contenedornormal3 {
+    width: 70em;
+    margin: 0 auto;
+}
+
+.contenedor2 {
+    background-color: paleturquoise;
+    border-radius: 15px 15px 15px 15px;
+    padding-top: 1em;
+    padding-bottom: 0.5em;
+    padding-left: 1.5em;
+    padding-right: 1.5em;
+    margin-bottom: 1.5em;
+}
+
+.centercontent {
+    margin-top: 5vh;
+    text-align: center;
+}
+
+.ui-dropdown-label-container {
+    min-width: 100%;
+    width: 100%;
+}

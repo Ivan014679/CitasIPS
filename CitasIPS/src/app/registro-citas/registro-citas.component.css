@@ -1,0 +1,7 @@
+.tamanotextarea {
+    max-width: 31.5em;
+    min-width: 31.5em;
+    max-height: 8.5em;
+    min-height: 8.5em;
+    resize: none;
+}

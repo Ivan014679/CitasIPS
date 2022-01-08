@@ -1,0 +1,190 @@
+<ng-container *ngIf='this.periodoAcademico'>
+    <h3 class="titulos">Profesionales</h3>
+    <br />
+    <div class="formbody container contenedornormal3">
+        <h6 [hidden]='vaAgregarPersonalSalud'>Lista de profesionales</h6>
+        <div class="contenedor2" [hidden]='vaAgregarPersonalSalud'>
+            <div class="row form-group justify-content-center">
+                <p-table #dt [columns]="columnasSeleccionadas" [value]="personalesSalud" sortMode="multiple"
+                    [paginator]="true" [rows]="10" [rowsPerPageOptions]="[5,10,20]" [showCurrentPageReport]="true"
+                    currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros totales"
+                    [resizableColumns]="true">
+                    <ng-template pTemplate="caption">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <p-multiSelect [options]="cols" [(ngModel)]="columnasSeleccionadas" optionLabel="header"
+                                selectedItemsLabel="{0} columnas seleccionadas" [style]="{minWidth: '100%'}"
+                                defaultLabel="Escoger columnas"></p-multiSelect>
+                            <div style="text-align: right;">
+                                <i class="pi pi-search" style="margin:4px 4px 0 0"></i>
+                                <input type="text" pInputText size="50" placeholder="Filtro global"
+                                    (input)="dt.filterGlobal($event.target.value, 'contains')" style="width: 95%">
+                            </div>
+                        </div>
+                    </ng-template>
+                    <ng-template pTemplate="header" let-columns>
+                        <tr>
+                            <th *ngFor="let col of columns" [pSortableColumn]="col.field" [ngSwitch]="col.field"
+                                pResizableColumn>
+                                {{col.header}}
+                                <p-sortIcon [field]="col.field"></p-sortIcon>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th *ngFor="let col of columns" [ngSwitch]="col.field" pResizableColumn>
+                                <input *ngSwitchCase="'identificacion'" pInputText type="text"
+                                    (input)="dt.filter($event.target.value, col.field, 'contains')" style="width:100%"
+                                    placeholder="Filtrar por ID">
+                                <p-dropdown *ngSwitchCase="'tipo_identificacion'" [options]="tiposIdentificacion"
+                                    [style]="{'minWidth':'100%', 'width':'100%'}" appendTo="body"
+                                    (onChange)="dt.filter($event.value, col.field, 'equals')"
+                                    placeholder="Filtrar por tipo de ID"></p-dropdown>
+                                <input *ngSwitchCase="'nombres'" pInputText type="text"
+                                    (input)="dt.filter($event.target.value, col.field, 'contains')" style="width:100%"
+                                    placeholder="Filtrar por nombres">
+                                <input *ngSwitchCase="'apellidos'" pInputText type="text"
+                                    (input)="dt.filter($event.target.value, col.field, 'contains')" style="width:100%"
+                                    placeholder="Filtrar por apellidos">
+                                <p-dropdown *ngSwitchCase="'n_tipo_personal_salud'" [options]="tPersonalSalud"
+                                    [style]="{'minWidth':'100%', 'width':'100%'}" appendTo="body"
+                                    (onChange)="dt.filter($event.value, col.field, 'equals')"
+                                    placeholder="Filtrar por tipo de profesional"></p-dropdown>
+                            </th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-registro let-columns="columns">
+                        <tr>
+                            <td *ngFor="let col of columns" class="ui-resizable-column">
+                                {{registro[col.field]}}
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+        </div>
+        <div class="row form-group justify-content-center" style="padding-top: 0.25em;"
+            [hidden]='vaAgregarPersonalSalud'>
+            <button type="button" (click)="onClickAgregar()" style="width: 25%;" class="btn btn-primary margenboton"><i
+                    class="fa fa-plus">&nbsp;</i>Agregar profesional</button>
+        </div>
+
+        <div class="contenedornormal" [hidden]='!vaAgregarPersonalSalud'>
+            <form [formGroup]="personalSaludForm" (ngSubmit)="onFormSubmit(personalSaludForm.value)">
+                <input formControlName="id_periodo_academico" #id_periodo_academico type="hidden" />
+                <button type="button" (click)="onClickAtras()" class="btn btn-primary" style="margin-bottom: 1em;"><i
+                        class="fa fa-arrow-left">&nbsp;</i>Volver atr&aacute;s</button>
+
+                <div class="row justify-content-center">
+                    <div class="col-sm-12">
+                        <label>Tipo de profesional: </label>
+                        <select formControlName="tipo_personal_salud" #tipo_personal_salud
+                            (change)="cambio(tipo_personal_salud.value)" class="form-control">
+                            <option selected disabled>Escoja un tipo de profesional</option>
+                            <option *ngFor="let tipoPersonalSalud of tiposPersonalSalud | async"
+                                value={{tipoPersonalSalud.id}}>
+                                {{tipoPersonalSalud.nombre}}</option>
+                        </select>
+                    </div>
+                </div>
+
+                <input formControlName="id_persona" #id_persona type="hidden" />
+            </form>
+
+            <div class="row contenedor2" style="margin-top: 1em;" *ngIf='tipoPersonalSalud == 1'>
+                <p-table #dt [columns]="columnasSeleccionadas2" [value]="practicantes" selectionMode="single"
+                    [(selection)]="profesionalSeleccionado" (onRowSelect)="filaSeleccionada($event)"
+                    (onRowUnselect)="filaDeseleccionada($event)" sortMode="multiple" [paginator]="true" [rows]="10"
+                    [rowsPerPageOptions]="[5,10,20]" [showCurrentPageReport]="true"
+                    currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros totales"
+                    [resizableColumns]="true">
+                    <ng-template pTemplate="caption">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <p-multiSelect [options]="cols2" [(ngModel)]="columnasSeleccionadas2" optionLabel="header"
+                                selectedItemsLabel="{0} columnas seleccionadas" [style]="{minWidth: '100%'}"
+                                defaultLabel="Escoger columnas"></p-multiSelect>
+                            <div style="text-align: right;">
+                                <i class="pi pi-search" style="margin:4px 4px 0 0"></i>
+                                <input type="text" pInputText size="50" placeholder="Filtro global"
+                                    (input)="dt.filterGlobal($event.target.value, 'contains')" style="width: 95%">
+                            </div>
+                        </div>
+                    </ng-template>
+                    <ng-template pTemplate="header" let-columns>
+                        <tr>
+                            <th *ngFor="let col of columns" [pSortableColumn]="col.field" [ngSwitch]="col.field"
+                                pResizableColumn>
+                                {{col.header}}
+                                <p-sortIcon [field]="col.field"></p-sortIcon>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th *ngFor="let col of columns" [ngSwitch]="col.field" pResizableColumn>
+                                <input *ngSwitchCase="'identificacion'" pInputText type="text"
+                                    (input)="dt.filter($event.target.value, col.field, 'contains')" style="width:100%"
+                                    placeholder="Filtrar por ID">
+                                <p-dropdown *ngSwitchCase="'tipo_identificacion'" [options]="tiposIdentificacion"
+                                    [style]="{'minWidth':'100%', 'width':'100%'}" appendTo="body"
+                                    (onChange)="dt.filter($event.value, col.field, 'equals')"
+                                    placeholder="Filtrar por tipo de ID"></p-dropdown>
+                                <input *ngSwitchCase="'nombres'" pInputText type="text"
+                                    (input)="dt.filter($event.target.value, col.field, 'contains')" style="width:100%"
+                                    placeholder="Filtrar por nombres">
+                                <input *ngSwitchCase="'apellidos'" pInputText type="text"
+                                    (input)="dt.filter($event.target.value, col.field, 'contains')" style="width:100%"
+                                    placeholder="Filtrar por apellidos">
+                                <input *ngSwitchCase="'fecha_inicio'" pInputText type="text"
+                                    (input)="dt.filter($event.target.value, col.field, 'contains')" style="width:100%"
+                                    placeholder="Filtrar por fecha de inicio">
+                                <input *ngSwitchCase="'fecha_fin'" pInputText type="text"
+                                    (input)="dt.filter($event.target.value, col.field, 'contains')" style="width:100%"
+                                    placeholder="Filtrar por fecha de fin">
+                            </th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-registro let-columns="columns">
+                        <tr [pSelectableRow]="registro">
+                            <td *ngFor="let col of columns" class="ui-resizable-column">
+                                {{registro[col.field]}}
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+
+            <div [formGroup]="personalSaludForm" class="contenedor2" style="margin-top: 1em;"
+                *ngIf='tipoPersonalSalud >= 2 && tipoPersonalSalud <= 3'>
+                <div class="row form-group">
+                    <div class="col-sm-6">
+                        <label>Número de identificaci&oacute;n: </label>
+                        <input formControlName="identificacion" #identificacion type="text"
+                            placeholder="Ingrese la identificación del profesional" class="form-control" />
+                    </div>
+                    <div class="col-sm-6 d-flex align-items-end">
+                        <button type="button" (click)="buscar()" style="width: 100%;"
+                            class="btn btn-primary margenboton"><i class="fa fa-search">&nbsp;</i>Buscar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div [formGroup]="personalSaludForm" class="row form-group" style="margin-top: 1em;"
+                *ngIf='tipoPersonalSalud >=2 && tipoPersonalSalud <= 3'>
+                <div class="col-sm-6">
+                    <label>Tipo de identificaci&oacute;n: </label>
+                    <input formControlName="tipo_identificacion" #tipo_identificacion type="text"
+                        placeholder="Tipo de identificación del profesional" class="form-control" readonly />
+                </div>
+                <div class="col-sm-6">
+                    <label>Nombres y apellidos: </label>
+                    <input formControlName="nombres" #nombres type="text" placeholder="Nombres del profesional"
+                        class="form-control" readonly />
+                </div>
+            </div>
+
+            <br />
+            <div [formGroup]="personalSaludForm" class="row justify-content-center form-group">
+                <button type="submit" (click)="onFormSubmit(personalSaludForm.value)" [disabled]="!personalSaludForm.valid" class="btn btn-success">Agregar
+                    profesional</button>
+            </div>
+
+        </div>
+    </div>
+</ng-container>

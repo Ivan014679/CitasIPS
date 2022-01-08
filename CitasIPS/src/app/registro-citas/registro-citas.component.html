@@ -1,0 +1,172 @@
+<ng-container *ngIf='this.periodoAcademico'>
+    <h3 class="titulos">Registrar una cita</h3>
+    <div class="formbody container">
+        <div class="contenedornormal2">
+            <h6 [hidden]="idPaciente != null">Buscar paciente</h6>
+            <div [hidden]="idPaciente != null" class="contenedor2">
+                <div class="row form-group justify-content-center">
+                    <p-table #dt [columns]="columnasSeleccionadas" [value]="pacientes"
+                        [(contextMenuSelection)]="pacienteSeleccionado" [contextMenu]="cm" sortMode="multiple"
+                        [paginator]="true" [rows]="10" [rowsPerPageOptions]="[5,10,20]" [showCurrentPageReport]="true"
+                        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros totales"
+                        [resizableColumns]="true">
+                        <ng-template pTemplate="caption">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <p-multiSelect [options]="cols" [(ngModel)]="columnasSeleccionadas" optionLabel="header"
+                                    selectedItemsLabel="{0} columnas seleccionadas" [style]="{minWidth: '100%'}"
+                                    defaultLabel="Escoger columnas"></p-multiSelect>
+                                <div style="text-align: right;">
+                                    <i class="pi pi-search" style="margin:4px 4px 0 0"></i>
+                                    <input type="text" pInputText size="50" placeholder="Filtro global"
+                                        (input)="dt.filterGlobal($event.target.value, 'contains')" style="width: 95%">
+                                </div>
+                            </div>
+                        </ng-template>
+                        <ng-template pTemplate="header" let-columns>
+                            <tr>
+                                <th *ngFor="let col of columns" [pSortableColumn]="col.field" [ngSwitch]="col.field"
+                                    pResizableColumn>
+                                    {{col.header}}
+                                    <p-sortIcon [field]="col.field"></p-sortIcon>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th *ngFor="let col of columns" [ngSwitch]="col.field" pResizableColumn>
+                                    <input *ngSwitchCase="'identificacion'" pInputText type="text"
+                                        (input)="dt.filter($event.target.value, col.field, 'contains')"
+                                        style="width:100%" placeholder="Filtrar por ID">
+                                    <p-dropdown *ngSwitchCase="'tipo_identificacion'" [options]="tiposIdentificacion"
+                                        [style]="{'minWidth':'100%', 'width':'100%'}" appendTo="body"
+                                        (onChange)="dt.filter($event.value, col.field, 'equals')"
+                                        placeholder="Filtrar por tipo de ID"></p-dropdown>
+                                    <input *ngSwitchCase="'codigo'" pInputText type="text"
+                                        (input)="dt.filter($event.target.value, col.field, 'contains')"
+                                        style="width:100%" placeholder="Filtrar por código">
+                                    <input *ngSwitchCase="'nombres'" pInputText type="text"
+                                        (input)="dt.filter($event.target.value, col.field, 'contains')"
+                                        style="width:100%" placeholder="Filtrar por nombres">
+                                    <input *ngSwitchCase="'apellidos'" pInputText type="text"
+                                        (input)="dt.filter($event.target.value, col.field, 'contains')"
+                                        style="width:100%" placeholder="Filtrar por apellidos">
+                                </th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-registro let-columns="columns">
+                            <tr [pContextMenuRow]="registro">
+                                <td *ngFor="let col of columns" class="ui-resizable-column">
+                                    {{registro[col.field]}}
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </div>
+            </div>
+        </div>
+
+        <div class="contenedornormal">
+            <form [formGroup]="registrarCitaForm" (ngSubmit)="onFormSubmit(registrarCitaForm.value)"
+                [hidden]="idPaciente == null">
+                <input formControlName="id_paciente" #id_paciente type="hidden" />
+                <input formControlName="id_periodo_academico" #id_periodo_academico type="hidden" />
+                <button type="button" (click)="onClick()" class="btn btn-primary" style="margin-bottom: 1em;"><i
+                        class="fa fa-arrow-left">&nbsp;</i>Volver atr&aacute;s</button>
+                <div class="row form-group">
+                    <div class="col-sm-6">
+                        <label>Apellidos - nombres del acudiente: </label>
+                        <input formControlName="acudiente" #acudiente type="text"
+                            placeholder="Apellidos y nombres del acudiente" class="form-control" />
+                    </div>
+                    <div class="col-sm-6">
+                        <label>Parentezco: </label>
+                        <select formControlName="parentezco" #parentezco class="form-control">
+                            <option selected disabled>Parentezco con el acudiente</option>
+                            <option *ngFor="let parentezco of parentezcos | async" value="{{parentezco.id}}">
+                                {{parentezco.nombre}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-sm-6">
+                        <label>Fecha de la cita: </label>
+                        <input formControlName="fecha_cita" #fecha_cita type="date" [min]="diaActual()"
+                            [max]="finAnio()" (change)="cambioFechaOPersonalSalud()" class="form-control" />
+                    </div>
+                    <div class="col-sm-6" *ngIf='this.horas'>
+                        <label>Hora de la cita: </label>
+                        <select formControlName="hora_cita" #hora_cita class="form-control">
+                            <option selected disabled>Horas</option>
+                            <option *ngFor="let hora of horas | async" value="{{hora[0]}}">
+                                {{hora[1]}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-sm-4">
+                        <label>Estado del seguimiento: </label>
+                        <select formControlName="estado_seguimiento" #estado_seguimiento class="form-control">
+                            <option selected disabled>Estados del seguimiento</option>
+                            <option *ngFor="let estadoSeguimiento of estadosSeguimientos | async"
+                                value="{{estadoSeguimiento.id}}">{{estadoSeguimiento.nombre}}</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-4">
+                        <label>Servicio aplicado: </label>
+                        <select formControlName="servicio_aplicado" #servicio_aplicado class="form-control">
+                            <option selected disabled>Servicios aplicados</option>
+                            <option *ngFor="let servicioAplicado of serviciosAplicados | async"
+                                value="{{servicioAplicado.id}}">{{servicioAplicado.nombre}}</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-4">
+                        <label>Profesional asignado: </label>
+                        <select formControlName="personal_salud" #personal_salud class="form-control"
+                            (change)="cambioFechaOPersonalSalud(personal_salud.value)" y>
+                            <option selected disabled>Profesionales</option>
+                            <option *ngFor="let personalSalud of personalesSalud | async"
+                                value="{{personalSalud.id}},{{personalSalud.tipo_personal_salud}}">
+                                {{personalSalud.nombres}}&nbsp;{{personalSalud.apellidos}}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-sm-8">
+                        <label>Observaciones: </label>
+                        <textarea formControlName="observaciones" #observaciones
+                            class="form-control tamanotextarea"></textarea>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-row">
+                            <label>Tipo de profesional: </label>
+                            <select formControlName="tipo_personal_salud" #tipo_personal_salud class="form-control">
+                                <option selected disabled>Tipo de profesional</option>
+                                <option *ngFor="let tipoPersonalSalud of tiposPersonalSalud | async"
+                                    value="{{tipoPersonalSalud.id}}">{{tipoPersonalSalud.nombre}}</option>
+                            </select>
+                        </div>
+                        <br />
+                        <div class="form-row">
+                            <label>Servicios complementarios: </label>
+                            <select formControlName="servicio_complementario" #servicio_complementario
+                                class="form-control">
+                                <option selected disabled>Servicios complementarios</option>
+                                <option *ngFor="let servicioComplementario of serviciosComplementarios | async"
+                                    value="{{servicioComplementario.id}}">{{servicioComplementario.nombre}}</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+
+                <br />
+                <div class="row justify-content-center form-group">
+                    <button type="submit" [disabled]="!registrarCitaForm.valid" class="btn btn-success">Guardar
+                        cita</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <p-contextMenu #cm appendTo="body" [model]="items"></p-contextMenu>
+
+</ng-container>

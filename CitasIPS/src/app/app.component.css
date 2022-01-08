@@ -1,0 +1,9 @@
+#periodo_academico{
+    font-size: 12px;    
+}
+
+.no-padding {
+    width: 5em;
+    margin-bottom: -1.25em;
+    text-align: center;  
+}

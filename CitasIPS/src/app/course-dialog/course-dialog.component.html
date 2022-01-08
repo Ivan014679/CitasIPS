@@ -1,0 +1,10 @@
+<h2 mat-dialog-title>{{titulo}}</h2>
+
+<mat-dialog-content style="margin-bottom: 0.375em;">  
+    <p [innerHTML]="mensaje"></p>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    <button class="mat-raised-button mat-primary"(click)="afirmacion()" [hidden]="tipo == -1">{{boton2}}</button>
+    <button class="mat-raised-button"(click)="negacion()">{{boton1}}</button>
+</mat-dialog-actions>
